@@ -4,6 +4,7 @@ import os
 from torchvision import transforms
 import torch.nn as nn
 from network import NeuralNetwork
+import torch.nn.functional as F
 
 device = "cuda"
 tranform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
@@ -22,13 +23,15 @@ def download_datasets(batch_size_train, batch_size_test):
     return train_load, test_load
 
 
-def train(dataloader, model, loss_fn, optimizer, epochs):
+def train(dataloader, model, loss_fn, optimizer, epochs, train_shallow=False):
     size = len(dataloader.dataset)
     for epoch in range(epochs):
         for batch, (X, y) in enumerate(dataloader):
             # Compute prediction and loss
             X, y = X.to(device), y.to(device)
             pred = model(X)
+            if train_shallow:
+                pred = F.log_softmax(pred, 1)
             loss = loss_fn(pred, y)
 
             # Backpropagation
@@ -48,7 +51,7 @@ def train(dataloader, model, loss_fn, optimizer, epochs):
     torch.save(model.state_dict(), path)
 
 
-def test(dataloader, model):
+def test(dataloader, model, shallow=False):
     model.load_state_dict(torch.load("./model_weights/mnist_net.pth"))
     correct = 0
     total = 0
@@ -58,6 +61,8 @@ def test(dataloader, model):
             images, labels = data
             images, labels = images.to(device), labels.to(device)
             outputs = model(images)
+            if shallow:
+                outputs = F.log_softmax(outputs)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()

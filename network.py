@@ -1,16 +1,15 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
 
-device = "cpu"
+
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
         self.stacked_model = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=3, padding=1),
+            nn.Conv2d(1, 32, kernel_size=(3, 3), padding=(1, 1)),
             nn.ReLU(),
-            nn.Conv2d(32, 64, 3, padding=1),
+            nn.Conv2d(32, 64, kernel_size=(3, 3), padding=(1, 1)),
             nn.ReLU(),
             nn.Flatten(),
             nn.Linear(50176, 128),
@@ -26,4 +25,4 @@ if __name__ == "__main__":
 
     inp = torch.randn(64, 1, 28, 28)
     x = model.forward(inp)
-    _=0
+    _ = 0

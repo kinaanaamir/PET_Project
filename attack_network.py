@@ -6,16 +6,9 @@ class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
         self.stacked_model = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(784, 256),
+            nn.Linear(3, 10),
             nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Linear(64, 32),
-            nn.ReLU(),
-            nn.Linear(32, 10))
+            nn.Linear(10, 2))
 
     def forward(self, x):
         return self.stacked_model(x)
@@ -24,6 +17,6 @@ class NeuralNetwork(nn.Module):
 if __name__ == "__main__":
     model = NeuralNetwork()
 
-    inp = torch.randn(64, 1, 28, 28)
+    inp = torch.randn(64, 3)
     x = model.forward(inp)
     _ = 0
