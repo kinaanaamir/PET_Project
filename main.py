@@ -7,18 +7,18 @@ from network import NeuralNetwork
 import torch.nn.functional as F
 
 device = "cuda"
-tranform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
+transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
 
 
 def download_datasets(batch_size_train, batch_size_test):
     train_load = torch.utils.data.DataLoader(
         torchvision.datasets.MNIST('./data', train=True, download=True,
-                                   transform=tranform),
+                                   transform=transform),
         batch_size=batch_size_train, shuffle=True)
 
     test_load = torch.utils.data.DataLoader(
         torchvision.datasets.MNIST('./data', train=False, download=True,
-                                   transform=tranform),
+                                   transform=transform),
         batch_size=batch_size_test, shuffle=True)
     return train_load, test_load
 
