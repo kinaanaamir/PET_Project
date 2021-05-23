@@ -23,7 +23,7 @@ def download_datasets(batch_size_train, batch_size_test):
     return train_load, test_load
 
 
-def train(dataloader, model, loss_fn, optimizer, epochs, train_shallow=False):
+def train(dataloader, model, loss_fn, optimizer, epochs, path="./model_weights/mnist_net.pth", train_shallow=False):
     size = len(dataloader.dataset)
     for epoch in range(epochs):
         for batch, (X, y) in enumerate(dataloader):
@@ -44,15 +44,12 @@ def train(dataloader, model, loss_fn, optimizer, epochs, train_shallow=False):
                 print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
     print("training finished")
-    if not os.path.exists("./model_weights"):
-        os.mkdir("./model_weights")
 
-    path = "./model_weights/mnist_net.pth"
     torch.save(model.state_dict(), path)
 
 
-def test(dataloader, model, shallow=False):
-    model.load_state_dict(torch.load("./model_weights/mnist_net.pth"))
+def test(dataloader, model, path="./model_weights/mnist_net.pth", shallow=False):
+    model.load_state_dict(torch.load(path))
     correct = 0
     total = 0
 
