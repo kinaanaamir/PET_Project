@@ -75,3 +75,8 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     train(train_loader, model, loss_fn, optimizer, 100)
     test(test_loader, model)
+
+    # train(train_loader, model, loss_fn, optimizer, 100, path="./model_weights/mnist_net_shallow_model.pth",
+    #       train_shallow=True)
+    # test(test_loader, model, path="./model_weights/mnist_net_shallow_model.pth",
+    #      shallow=True)
