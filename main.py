@@ -1,7 +1,6 @@
 import torch
 import torchvision
 import os
-import torchvision.datasets as datasets
 from torchvision import transforms
 import torch.nn as nn
 from network import NeuralNetwork
