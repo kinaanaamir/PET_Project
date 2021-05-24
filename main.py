@@ -7,7 +7,7 @@ from network import NeuralNetwork
 import torch.nn.functional as F
 from shallow_network import ShallowNetwork
 
-device = "cpu"
+device = "cuda"
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
 
 
