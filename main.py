@@ -5,8 +5,9 @@ from torchvision import transforms
 import torch.nn as nn
 from network import NeuralNetwork
 import torch.nn.functional as F
+from shallow_network import ShallowNetwork
 
-device = "cuda"
+device = "cpu"
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
 
 
@@ -70,13 +71,23 @@ if __name__ == "__main__":
     if not os.path.exists("./model_weights"):
         os.mkdir("./model_weights")
     train_loader, test_loader = download_datasets(128, 128)
-    model = NeuralNetwork().to(device)
     loss_fn = nn.CrossEntropyLoss()
+
+    model = NeuralNetwork().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-    train(train_loader, model, loss_fn, optimizer, 100)
+    train(train_loader, model, loss_fn, optimizer, 50)
     test(test_loader, model)
 
-    # train(train_loader, model, loss_fn, optimizer, 100, path="./model_weights/mnist_net_shallow_model.pth",
-    #       train_shallow=True)
-    # test(test_loader, model, path="./model_weights/mnist_net_shallow_model.pth",
-    #      shallow=True)
+    shallow_model = ShallowNetwork().to(device)
+    optimizer = torch.optim.Adam(shallow_model.parameters(), lr=1e-3)
+    train(train_loader, shallow_model, loss_fn, optimizer, 50, path="./model_weights/mnist_net_shallow_model.pth",
+          train_shallow=True)
+    test(test_loader, shallow_model, path="./model_weights/mnist_net_shallow_model.pth",
+         shallow=True)
+    # train(train_loader)
+    # a = torch.empty(60000, 3, dtype=torch.float)
+    # for batch, (X, y) in enumerate(train_loader):
+    #     # Compute prediction and loss
+    #     X, y = X.to(device), y.to(device)
+    #     pred = model(X)
+    #     # a[batch*128:pred] =

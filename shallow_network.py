@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 
-class NeuralNetwork(nn.Module):
+class ShallowNetwork(nn.Module):
     def __init__(self):
-        super(NeuralNetwork, self).__init__()
+        super(ShallowNetwork, self).__init__()
         self.stacked_model = nn.Sequential(
             nn.Flatten(),
             nn.Linear(784, 256),
