@@ -1,21 +1,22 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
-class NeuralNetwork(nn.Module):
+class AttackNetwork(nn.Module):
     def __init__(self):
-        super(NeuralNetwork, self).__init__()
+        super(AttackNetwork, self).__init__()
         self.stacked_model = nn.Sequential(
             nn.Linear(3, 10),
             nn.ReLU(),
             nn.Linear(10, 2))
 
     def forward(self, x):
-        return self.stacked_model(x)
+        return F.log_softmax(self.stacked_model(x), 1)
 
 
 if __name__ == "__main__":
-    model = NeuralNetwork()
+    model = AttackNetwork()
 
     inp = torch.randn(64, 3)
     x = model.forward(inp)
