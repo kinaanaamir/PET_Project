@@ -12,12 +12,14 @@ class NeuralNetwork(nn.Module):
         self.fc1 = nn.Linear(50176, 128)
         self.fc2 = nn.Linear(128, 10)
 
-    def forward(self, x):
+    def forward(self, x, do_log_softmax=True):
         x = F.relu(self.conv_1(x))
         x = F.relu(self.conv_2(x))
         x = x.view(-1, 50176)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
+        if not do_log_softmax:
+            return x
         return F.log_softmax(x, 1)
 
 
