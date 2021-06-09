@@ -54,7 +54,6 @@ def make_train_and_test_loader_for_shallow_model(batch_size_train, batch_size_te
 def train(dataloader, model, loss_fn, optimizer, epochs, path="./model_weights/mnist_net.pth", train_shallow=False):
     size = len(dataloader.dataset)
     for epoch in range(epochs):
-        break
         for batch, (X, y) in enumerate(dataloader):
             # Compute prediction and loss
             X, y = X.to(device), y.to(device)
