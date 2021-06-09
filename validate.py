@@ -7,7 +7,6 @@ from torch.utils.data import TensorDataset, DataLoader
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
 import numpy as np
-from shallow_network import ShallowNetwork
 from network import NeuralNetwork
 from attack_network import AttackNetwork
 
