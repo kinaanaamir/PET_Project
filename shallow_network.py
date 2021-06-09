@@ -18,11 +18,11 @@ class ShallowNetwork(nn.Module):
             nn.Linear(32, 10))
 
     def forward(self, x):
-        return self.stacked_model(x)
+        return self.stacked_model(x.float())
 
 
 if __name__ == "__main__":
-    model = NeuralNetwork()
+    model = ShallowNetwork()
 
     inp = torch.randn(64, 1, 28, 28)
     x = model.forward(inp)

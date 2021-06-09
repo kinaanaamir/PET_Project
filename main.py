@@ -44,9 +44,9 @@ def make_train_and_test_loader_for_shallow_model(batch_size_train, batch_size_te
     final_data = final_data.numpy()
     final_labels = final_labels.numpy()
     xtrain, xtest, ytrain, ytest = train_test_split(final_data, final_labels, test_size=0.1429)
-    train_data_loader = DataLoader(TensorDataset(torch.tensor(xtrain),
+    train_data_loader = DataLoader(TensorDataset(torch.tensor(xtrain, dtype=torch.float64),
                                                  torch.tensor(ytrain)), batch_size=batch_size_train, shuffle=True)
-    test_data_loader = DataLoader(TensorDataset(torch.tensor(xtest), torch.tensor(ytest)),
+    test_data_loader = DataLoader(TensorDataset(torch.tensor(xtest, dtype=torch.float64), torch.tensor(ytest)),
                                   batch_size=batch_size_test, shuffle=True)
     return train_data_loader, test_data_loader
 
@@ -139,16 +139,18 @@ if __name__ == "__main__":
     loss_fn = nn.CrossEntropyLoss()
 
     model = NeuralNetwork().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-    train(train_loader, model, loss_fn, optimizer, 50)
-    test(test_loader, model)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=0.0001)
+
+    train(train_loader, model, loss_fn, optimizer, 200,
+          path="./model_weights/mnist_net.pth",
+          train_shallow=True)
 
     shallow_model = ShallowNetwork().to(device)
     shallow_optimizer = torch.optim.Adam(shallow_model.parameters(), lr=1e-3)
 
     shallow_train_loader, shallow_test_loader = make_train_and_test_loader_for_shallow_model(128, 128)
 
-    train(shallow_train_loader, shallow_model, loss_fn, shallow_optimizer, 50,
+    train(shallow_train_loader, shallow_model, loss_fn, shallow_optimizer, 200,
           path="./model_weights/mnist_net_shallow_model.pth",
           train_shallow=True)
     test(shallow_test_loader, shallow_model, path="./model_weights/mnist_net_shallow_model.pth",
