@@ -6,13 +6,12 @@ import torch.nn.functional as F
 class AttackNetwork(nn.Module):
     def __init__(self):
         super(AttackNetwork, self).__init__()
-        self.stacked_model = nn.Sequential(
-            nn.Linear(3, 10),
-            nn.ReLU(),
-            nn.Linear(10, 2))
+        self.fc1 = nn.Linear(3, 10)
+        self.fc2 = nn.Linear(10, 2)
 
     def forward(self, x):
-        return F.log_softmax(self.stacked_model(x), 1)
+        x = F.relu(self.fc1(x))
+        return F.log_softmax(self.fc2(x))
 
 
 if __name__ == "__main__":

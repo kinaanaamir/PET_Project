@@ -54,6 +54,7 @@ def make_train_and_test_loader_for_shallow_model(batch_size_train, batch_size_te
 def train(dataloader, model, loss_fn, optimizer, epochs, path="./model_weights/mnist_net.pth", train_shallow=False):
     size = len(dataloader.dataset)
     for epoch in range(epochs):
+        break
         for batch, (X, y) in enumerate(dataloader):
             # Compute prediction and loss
             X, y = X.to(device), y.to(device)
@@ -76,7 +77,7 @@ def train(dataloader, model, loss_fn, optimizer, epochs, path="./model_weights/m
     torch.save(model.state_dict(), path)
 
 
-def test(dataloader, model, path="./model_weights/mnist_net.pth", shallow=False):
+def test(dataloader, model, path="./model_weights/mnist_net.pth", shallow=False, print_statement=""):
     model.load_state_dict(torch.load(path))
     correct = 0
     total = 0
@@ -85,12 +86,13 @@ def test(dataloader, model, path="./model_weights/mnist_net.pth", shallow=False)
         for data in dataloader:
             images, labels = data
             images, labels = images.to(device), labels.to(device)
-            outputs = model(images)
+            outputs = model(images.float())
             if shallow:
                 outputs = F.log_softmax(outputs)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
+    print(print_statement)
     print("Accuracy : ", 100 * correct / total)
 
 
@@ -106,7 +108,7 @@ def get_dataset_for_attack_model(train_load, test_load, s_model, train_bs, test_
             images, labels = images.to(device), labels.to(device)
             outputs = s_model(images)
             outputs = F.softmax(outputs)
-            train_tensor1[counter * train_bs: (counter + 1) * train_bs, :] = torch.topk(outputs, 3)
+            train_tensor1[counter * train_bs: (counter + 1) * train_bs, :] = torch.topk(outputs, 3).values
             counter += 1
 
     counter = 0
@@ -116,7 +118,7 @@ def get_dataset_for_attack_model(train_load, test_load, s_model, train_bs, test_
             images, labels = images.to(device), labels.to(device)
             outputs = s_model(images)
             outputs = F.softmax(outputs)
-            train_tensor2[counter * test_bs: (counter + 1) * test_bs, :] = torch.topk(outputs, 3)
+            train_tensor2[counter * test_bs: (counter + 1) * test_bs, :] = torch.topk(outputs, 3).values
             counter += 1
 
     train_tensor = np.zeros([70000, 3], dtype=np.float64)
@@ -142,19 +144,19 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=0.0001)
 
     train(train_loader, model, loss_fn, optimizer, 200,
-          path="./model_weights/mnist_net.pth",
-          train_shallow=True)
+          path="./model_weights/mnist_net.pth")
 
     shallow_model = ShallowNetwork().to(device)
     shallow_optimizer = torch.optim.Adam(shallow_model.parameters(), lr=1e-3)
-
     shallow_train_loader, shallow_test_loader = make_train_and_test_loader_for_shallow_model(128, 128)
 
     train(shallow_train_loader, shallow_model, loss_fn, shallow_optimizer, 200,
           path="./model_weights/mnist_net_shallow_model.pth",
           train_shallow=True)
     test(shallow_test_loader, shallow_model, path="./model_weights/mnist_net_shallow_model.pth",
-         shallow=True)
+         shallow=True, print_statement="shallow ")
+
+    shallow_model.load_state_dict(torch.load("./model_weights/mnist_net_shallow_model.pth"))
 
     attack_train_loader, attack_test_loader = get_dataset_for_attack_model(shallow_train_loader, shallow_test_loader,
                                                                            shallow_model,
@@ -164,4 +166,4 @@ if __name__ == "__main__":
 
     train(attack_train_loader, attack_model, loss_fn, attack_optimizer, 50,
           path="./model_weights/mnist_net_attack_model.pth")
-    test(shallow_test_loader, attack_model, path="./model_weights/mnist_net_attack_model.pth")
+    test(attack_test_loader, attack_model, path="./model_weights/mnist_net_attack_model.pth", print_statement="test")
