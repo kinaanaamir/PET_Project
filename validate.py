@@ -92,11 +92,10 @@ if __name__ == "__main__":
     model = NeuralNetwork().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=0.0001)
 
-    model.load_state_dict(torch.load("./model_weights/mnist_net.pth"))
-
     attack_train_loader, attack_test_loader = get_dataset_for_attack_model(train_loader, test_loader,
                                                                            model,
-                                                                           128, 128)
+                                                                           128, 128,
+                                                                           path="./model_weights/mnist_net.pth")
     attack_model = AttackNetwork().to(device)
     attack_optimizer = torch.optim.Adam(attack_model.parameters(), lr=1e-3, weight_decay=0.0001)
     attack_model.load_state_dict(torch.load("./model_weights/mnist_net_attack_model.pth"))
@@ -107,4 +106,4 @@ if __name__ == "__main__":
     correct += a
     total += b
 
-    print("Accuracy :", 100 * (correct/total))
+    print("Accuracy :", 100 * (correct / total))
